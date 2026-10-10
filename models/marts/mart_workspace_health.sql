@@ -96,10 +96,10 @@ SELECT
     , COALESCE(s.signal_users_drop, FALSE)                              AS signal_users_drop
     , COALESCE(s.signal_quality_drop, FALSE)                            AS signal_quality_drop
     , COALESCE(s.signal_failed_answers, FALSE)                          AS signal_failed_answers
-    , 40 * signal_quality_drop::INT
-      + 30 * signal_usage_drop::INT
-      + 20 * signal_users_drop::INT
-      + 10 * signal_failed_answers::INT                                 AS risk_score
+    , 40 * COALESCE(s.signal_quality_drop, FALSE)::INT
+      + 30 * COALESCE(s.signal_usage_drop, FALSE)::INT
+      + 20 * COALESCE(s.signal_users_drop, FALSE)::INT
+      + 10 * COALESCE(s.signal_failed_answers, FALSE)::INT              AS risk_score
     , CASE
           WHEN risk_score >= 40 THEN 'high'
           WHEN risk_score >= 20 THEN 'medium'

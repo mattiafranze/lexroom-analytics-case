@@ -1,0 +1,91 @@
+version: 2
+
+models:
+  - name: stg_ama_events
+    description: "{{ doc('ama_answer') }} One row per answer, with module names normalised and invalid latencies cleaned."
+    columns:
+      - name: event_id
+        data_tests: [unique, not_null]
+      - name: user_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_users')
+                field: user_id
+      - name: workspace_id
+        description: Workspace of the user. 8 answers point to workspaces missing from `raw_workspaces` (ws_9000, ws_9001); kept here, excluded from the workspace mart.
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_workspaces')
+                field: workspace_id
+              config:
+                severity: warn
+      - name: module
+        description: Legal module, lowercased. The raw value `civil` is mapped to `civile`.
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [civile, penale, tributario, lavoro, amministrativo, societario]
+      - name: response_latency_ms
+        description: Time to answer in milliseconds. Negative raw values (33 rows, clock issues) are set to null.
+      - name: has_invalid_latency
+        description: True when the raw latency was negative.
+      - name: is_timeout
+        description: "{{ doc('is_timeout') }}"
+      - name: has_no_sources
+        description: "{{ doc('has_no_sources') }}"
+      - name: is_cached
+        description: True when the answer came from cache (median latency ~120 ms vs ~3.2 s).
+      - name: event_week
+        description: "{{ doc('event_week') }}"
+
+  - name: stg_ama_feedback
+    description: Thumbs up/down left on an AMA answer. One row per feedback, exact duplicates removed.
+    columns:
+      - name: feedback_id
+        data_tests: [unique, not_null]
+      - name: event_id
+        description: The answer being rated. 50 feedback rows (after deduplication) point to answers that do not exist in the events export; they are dropped when joining to answers.
+        data_tests:
+          - unique
+          - relationships:
+              arguments:
+                to: ref('stg_ama_events')
+                field: event_id
+              config:
+                severity: warn
+      - name: thumbs
+        description: 1 (up) or -1 (down). Raw values -2, 0 and 2 (16 rows) are invalid and set to null.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [1, -1]
+      - name: has_invalid_thumbs
+        description: True when the raw thumbs value was not 1 or -1. These rows are excluded from quality metrics.
+      - name: reason_tag
+        description: Why the user rated the answer negatively. Null on thumbs up, and on ~20% of thumbs down.
+
+  - name: stg_users
+    description: One row per user.
+    columns:
+      - name: user_id
+        data_tests: [unique, not_null]
+      - name: created_at_utc
+        description: >
+          Not reliable: 71 users have answers before this date. Do not use it to
+          compute tenure or to filter activity.
+
+  - name: stg_workspaces
+    description: One row per customer workspace (law firm or in-house legal team).
+    columns:
+      - name: workspace_id
+        data_tests: [unique, not_null]
+      - name: country
+        description: IT, DE, ES. Missing for 3 workspaces, shown as `unknown`.
+      - name: plan
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [free, pro, enterprise]

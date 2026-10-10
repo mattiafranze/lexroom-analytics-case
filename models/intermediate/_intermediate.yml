@@ -1,0 +1,16 @@
+version: 2
+
+models:
+  - name: int_ama_events_enriched
+    description: >
+      One row per AMA answer, with its feedback (if any) and the workspace attributes.
+      This is the single base for all AMA marts, so every metric uses the same definitions.
+    columns:
+      - name: event_id
+        data_tests: [unique, not_null]
+      - name: is_orphan_workspace
+        description: True when the workspace is missing from `raw_workspaces`.
+      - name: is_rated
+        description: True when the answer has a valid thumbs up or down.
+      - name: is_technical_success
+        description: True when the answer did not time out and had at least one source.

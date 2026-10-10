@@ -1,0 +1,76 @@
+version: 2
+
+models:
+  - name: mart_ama_module_weekly
+    description: >
+      **Grain: one row per legal module per week.** Answers the Product question
+      "how is AMA quality trending in each legal module, and where should we focus?".
+    columns:
+      - name: event_week
+        description: "{{ doc('event_week') }}"
+      - name: answers
+        description: Number of AMA answers.
+      - name: rated_answers
+        description: Answers with a valid thumbs up or down.
+      - name: thumbs_down_rate
+        description: "{{ doc('thumbs_down_rate') }}"
+      - name: technical_success_rate
+        description: "{{ doc('technical_success_rate') }}"
+      - name: good_answer_rate
+        description: "{{ doc('good_answer_rate') }}"
+      - name: median_latency_ms_uncached
+        description: Median answer time, excluding cached answers and timeouts.
+      - name: reason_wrong_answer
+        description: Thumbs down tagged `wrong_answer`. The reason columns tell Product what kind of fix is needed.
+      - name: is_low_sample
+        description: "{{ doc('is_low_sample') }}"
+
+  - name: mart_ama_quality_weekly
+    description: >
+      **Grain: one row per week.** The AMA North Star (`good_answer_rate`) and the
+      components it is built from, for Leadership.
+    columns:
+      - name: event_week
+        description: "{{ doc('event_week') }}"
+        data_tests: [unique, not_null]
+      - name: good_answer_rate
+        description: "{{ doc('good_answer_rate') }}"
+        data_tests: [not_null]
+      - name: technical_success_rate
+        description: "{{ doc('technical_success_rate') }}"
+      - name: thumbs_down_rate
+        description: "{{ doc('thumbs_down_rate') }}"
+      - name: feedback_rate
+        description: Share of answers that received a valid rating. If it moves, the North Star becomes less comparable over time.
+      - name: is_low_sample
+        description: "{{ doc('is_low_sample') }}"
+
+  - name: mart_workspace_health
+    description: >
+      **Grain: one row per workspace, as of the last day with data.** Tells Customer
+      Success which accounts show a deteriorating AMA experience, and why.
+    columns:
+      - name: workspace_id
+        data_tests:
+          - unique
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_workspaces')
+                field: workspace_id
+      - name: risk_score
+        description: "{{ doc('risk_score') }}"
+        data_tests: [not_null]
+      - name: risk_level
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [high, medium, low]
+      - name: signal_quality_drop
+        description: Thumbs-down rate up at least 10 points vs the previous 28 days.
+      - name: signal_usage_drop
+        description: Answers down more than half of the platform-wide decline would explain.
+      - name: signal_users_drop
+        description: Active users down more than 30% beyond the platform trend.
+      - name: signal_failed_answers
+        description: At least 3% of answers timed out or had no sources.
