@@ -33,6 +33,8 @@ Weeks are ISO weeks (Monday start) in UTC. Windows are anchored to the `as_of_da
 
 Answer queries are in [`analyses/`](analyses/); exposures in [`models/marts/exposures.yml`](models/marts/exposures.yml).
 
+The Part 2 memo, *My first 90 days as Lexroom's first Analytics Engineer*, is in [`memo/first_90_days.pdf`](memo/first_90_days.pdf) (source: [`memo/first_90_days.md`](memo/first_90_days.md)).
+
 ## The short version
 
 From the week of 23 March, AMA quality drops sharply in **one large enterprise account, ws_0041**: its thumbs-down rate goes from 24% to 77%, across all six modules, with 30 of its 53 active users rating answers down. Outside it, the platform moves only slightly. Q1 and Q2 therefore lead to the same finding from two angles, and the North Star (Q3) shows it as a step from about 0.75 to about 0.65. In parallel, AMA usage falls across the whole platform.
