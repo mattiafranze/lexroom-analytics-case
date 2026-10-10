@@ -1,0 +1,7 @@
+lexroom:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: lexroom.duckdb
+      threads: 4

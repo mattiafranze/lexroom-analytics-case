@@ -1,0 +1,12 @@
+version: 2
+
+sources:
+  - name: raw
+    meta:
+      external_location: "read_csv('data/{name}.csv', header = true, auto_detect = true)"
+    tables:
+      - name: raw_events_ama
+      - name: raw_feedback_ama
+      - name: raw_users
+      - name: raw_workspaces
+      - name: raw_engineering_prs

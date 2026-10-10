@@ -1,0 +1,17 @@
+name: lexroom_analytics
+version: "1.0.0"
+profile: lexroom
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+
+models:
+  lexroom_analytics:
+    staging:
+      +materialized: view
+    intermediate:
+      +materialized: view
+    marts:
+      +materialized: table
