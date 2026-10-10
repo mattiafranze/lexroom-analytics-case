@@ -6,3 +6,4 @@ logs/
 *.duckdb.wal
 .user.yml
 .DS_Store
+.vscode/

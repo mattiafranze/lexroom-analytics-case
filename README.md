@@ -5,11 +5,11 @@ A small dbt project on DuckDB that models Lexroom's "Ask Me Anything" (AMA) data
 ## Setup
 
 ```bash
-python3 -m venv .venv
-.venv/bin/pip install dbt-duckdb
+conda create -n lexroom python=3.12 && conda activate lexroom   # or any virtualenv
+pip install dbt-duckdb
 export DBT_PROFILES_DIR=.        # profiles.yml is in the repo, DuckDB file is created locally
-.venv/bin/dbt build              # 8 models, 29 tests (2 warn on purpose, see "Known data issues")
-.venv/bin/dbt docs generate && .venv/bin/dbt docs serve
+dbt build                        # 8 models, 29 tests (2 warn on purpose, see "Known data issues")
+dbt docs generate && dbt docs serve
 ```
 
 The raw CSVs are read in place from `data/` as dbt sources (`external_location`), so there is no seed step. On BigQuery the same sources would point to the Pub/Sub landing tables.
