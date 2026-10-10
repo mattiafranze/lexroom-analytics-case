@@ -30,7 +30,7 @@ Thumbs down divided by rated answers (thumbs up + thumbs down). Only about 27% o
 i.e. P(technically sound) × P(not rated down | technically sound).
 
 - **Grain:** one value per week (or per module per week).
-- **Window:** weekly, read as a trend over the last 8 complete weeks up to `as_of_date`.
+- **Window:** weekly, read as a trend over the last 8 weeks up to `as_of_date`.
 - **Assumption:** users who rate are representative of those who don't. On everything we can observe (latency, tokens, sources, cache, module, role) rated and unrated answers look the same; selection on satisfaction itself cannot be ruled out.
 {% enddocs %}
 
@@ -39,20 +39,20 @@ True when fewer than 30 answers were rated in the period (`min_rated_answers` va
 {% enddocs %}
 
 {% docs risk_score %}
-**Account health risk** for Customer Success, from 0 to 100, comparing the 28 days up to `as_of_date` with the 28 days before.
+**Account health risk** for Customer Success, from 0 to 100, comparing the 28 days up to `as_of_date` with the 28 days before. Every signal is also computed one week earlier.
 
 | Signal | Points | Fires when |
 |---|---|---|
-| Quality drop | 40 | Thumbs-down rate at least 10 points higher than in the previous period (min 15 rated answers in both) |
+| Quality drop | 40 if also present one week earlier, 20 if only this week | Thumbs-down rate at least 10 points higher than in the previous period (min 15 rated answers in both) |
 | Usage drop | 30 | Answers below half of what the platform trend predicts for this workspace (min 30 answers before) |
 | Users drop | 20 | Active users below half of what the platform trend predicts (min 5 users before) |
 | Failed answers | 10 | At least 3% of answers timed out or had no sources (min 20 answers) |
 
-`risk_level`: **high** ≥ 40, **medium** 20 to 39, **low** below 20.
+`risk_level`: **high** ≥ 40, **medium** 20 to 39, **low** below 20 with enough ratings to judge, **not enough data** below 20 without them (low does not mean healthy unless we could measure it).
 
 Usage signals are relative to the platform: when everyone uses AMA less, that is a product question, not an account one.
 {% enddocs %}
 
 {% docs is_after_as_of_date %}
-True for data after `as_of_date` (12 April 2026). From 13 April daily volume drops in one step from ~50 to ~15 answers, which looks like a truncated export rather than real usage. These rows stay visible but are excluded from the answers to the three questions.
+True for data after the `as_of_date` var. By default `as_of_date` is the last day in the data (19 April 2026), so this is false everywhere; moving the var back shows how sensitive the answers are to the window.
 {% enddocs %}

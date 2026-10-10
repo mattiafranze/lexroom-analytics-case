@@ -1,5 +1,5 @@
 -- Rates must be between 0 and 1 and counts must nest (thumbs down ≤ rated ≤ answers).
--- Catches broken denominators, integer division and filters applied to one side only.
+-- Catches broken denominators and filters applied to one side of a ratio only.
 
 SELECT 'mart_ama_module_weekly' AS mart, module AS key, event_week
 FROM {{ ref('mart_ama_module_weekly') }}

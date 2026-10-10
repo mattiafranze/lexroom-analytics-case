@@ -11,6 +11,7 @@ exposures:
       and where the team should focus.
     depends_on:
       - ref('mart_ama_module_weekly')
+      - ref('int_ama_events_enriched')
     owner:
       name: Product
 

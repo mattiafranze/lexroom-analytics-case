@@ -17,6 +17,6 @@ models:
       +materialized: table
 
 vars:
-  as_of_date: "2026-04-12"     # last day before the suspected truncated export (step change on 13 Apr)
+  as_of_date: "2026-04-19"     # last day in the data; a var so the windows can be moved to test sensitivity
   timeout_latency_ms: 900000   # 15 min: the AMA backend hard timeout observed in the data
   min_rated_answers: 30        # below this, a weekly feedback rate is flagged as low sample

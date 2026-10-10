@@ -56,7 +56,7 @@ models:
 
   - name: mart_workspace_health
     description: >
-      **Grain: one row per workspace, as of `as_of_date` (12 April 2026).** Tells Customer
+      **Grain: one row per workspace, as of `as_of_date` (default: last day in the data, 19 April 2026).** Tells Customer
       Success which accounts show a deteriorating AMA experience, and why.
     columns:
       - name: workspace_id
@@ -70,13 +70,17 @@ models:
         data_tests:
           - accepted_values:
               arguments:
-                values: [high, medium, low]
+                values: [high, medium, low, not enough data]
       - name: signup_date
         description: Workspace signup date. Not reliable for 3 workspaces that have answers before it (see README).
       - name: thumbs_down_rate_current
         description: Thumbs-down rate in the last 28 days. Null when the workspace has no rated answers in the period.
       - name: signal_quality_drop
         description: Thumbs-down rate at least 10 points higher than in the previous 28 days, with at least 15 rated answers in both periods.
+      - name: is_quality_drop_confirmed
+        description: The quality drop also fired one week earlier. Only confirmed drops count in full, so one bad week does not top the list.
+      - name: has_enough_data
+        description: At least 15 rated answers in both periods, so the quality signal can be judged. Without it, a score of 0 means "unknown", not "healthy".
       - name: signal_usage_drop
         description: Answers in the last 28 days below half of what the platform trend predicts for this workspace (min 30 answers before).
       - name: signal_users_drop

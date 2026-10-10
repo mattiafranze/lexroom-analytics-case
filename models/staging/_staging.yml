@@ -29,7 +29,7 @@ models:
               arguments:
                 values: [civile, penale, tributario, lavoro, amministrativo, societario]
       - name: response_latency_ms
-        description: Time to answer in milliseconds. Negative raw values (33 rows, clock issues) are set to null.
+        description: Time to answer in milliseconds. Negative raw values (33 rows) are set to null; their magnitudes match the valid distribution, so they look like sign flips, but we do not guess.
       - name: has_invalid_latency
         description: True when the raw latency was negative.
       - name: is_timeout
