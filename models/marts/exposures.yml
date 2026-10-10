@@ -1,0 +1,40 @@
+version: 2
+
+exposures:
+  - name: q1_ama_quality_by_module
+    label: "Q1 - AMA quality trend per module"
+    type: analysis
+    maturity: medium
+    url: https://github.com/mattiafranze/lexroom-analytics-case/blob/main/analyses/q1_ama_quality_by_module.sql
+    description: >
+      Product: weekly quality trend of each legal module over the last 8 weeks,
+      and where the team should focus.
+    depends_on:
+      - ref('mart_ama_module_weekly')
+    owner:
+      name: Product
+
+  - name: q2_workspace_risk
+    label: "Q2 - Account health risk"
+    type: analysis
+    maturity: medium
+    url: https://github.com/mattiafranze/lexroom-analytics-case/blob/main/analyses/q2_workspace_risk.sql
+    description: >
+      Customer Success: workspaces showing signs of a deteriorating AMA experience,
+      ranked by risk score and account size.
+    depends_on:
+      - ref('mart_workspace_health')
+    owner:
+      name: Customer Success
+
+  - name: q3_ama_north_star
+    label: "Q3 - AMA North Star"
+    type: analysis
+    maturity: medium
+    url: https://github.com/mattiafranze/lexroom-analytics-case/blob/main/analyses/q3_ama_north_star.sql
+    description: >
+      Leadership: weekly good answer rate over the last 8 weeks.
+    depends_on:
+      - ref('mart_ama_quality_weekly')
+    owner:
+      name: Leadership
