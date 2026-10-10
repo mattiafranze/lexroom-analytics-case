@@ -33,7 +33,7 @@ Weeks are ISO weeks (Monday start) in UTC. Windows are anchored to the `as_of_da
 
 Answer queries are in [`analyses/`](analyses/); exposures in [`models/marts/exposures.yml`](models/marts/exposures.yml).
 
-The Part 2 memo, *My first 90 days as Lexroom's first Analytics Engineer*, is in [`memo/first_90_days.pdf`](memo/first_90_days.pdf) (source: [`memo/first_90_days.md`](memo/first_90_days.md)).
+The Part 2 memo, *My first 90 days as Lexroom's first Analytics Engineer*, is in [`memo/first_90_days.pdf`](memo/first_90_days.pdf) (source: [`memo/first_90_days.md`](memo/first_90_days.md)). The PDF is built with `pandoc memo/first_90_days.md -o memo/first_90_days.pdf --pdf-engine=xelatex -V papersize=a4 -V geometry:margin=1.9cm -V fontsize=10pt --include-in-header=memo/_memohead.tex`.
 
 ## The short version
 
@@ -198,4 +198,4 @@ Some tests guard against regressions rather than today's data: `unique` on the d
 
 ## How I used AI
 
-I used Claude Code throughout: to profile the raw data with ad hoc DuckDB queries, scaffold the project, and draft SQL, YAML and documentation. The modelling and metric decisions are mine: grain of each mart, the North Star definition and its revision, the risk signals, weights and thresholds, and which data issues to fix, flag or tolerate. I also had a second model review the project adversarially twice, recomputing the README numbers from the raw data. Those reviews changed the analysis in substance: the North Star conditioning, the risk score volume minimums and confirmation rule, dropping a date cut-off I had introduced, and, most importantly, seeing that the "platform-wide" regression was one account. I reviewed every model and checked the numbers in this README against the marts.
+I used Claude Code throughout: to profile the raw data with ad hoc DuckDB queries, scaffold the project, and draft SQL, YAML and documentation. The modelling and metric decisions are mine: grain of each mart, the North Star definition and its revision, the risk signals, weights and thresholds, and which data issues to fix, flag or tolerate. I also had a second model review the project adversarially twice, recomputing the README numbers from the raw data. Those reviews changed the analysis in substance: the North Star conditioning, the risk score volume minimums and confirmation rule, dropping a date cut-off I had introduced, and, most importantly, seeing that the "platform-wide" regression was one account. For the Part 2 memo I wrote the positions and the plan from my own notes and used Claude to structure the text, hunt for generic sentences and check it against this repo. I reviewed every model and checked the numbers in this README against the marts.

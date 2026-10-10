@@ -13,7 +13,7 @@ exposures:
       - ref('mart_ama_module_weekly')
       - ref('int_ama_events_enriched')
     owner:
-      name: Product
+      name: Product lead
 
   - name: q2_workspace_risk
     label: "Q2 - Account health risk"
@@ -26,7 +26,7 @@ exposures:
     depends_on:
       - ref('mart_workspace_health')
     owner:
-      name: Customer Success
+      name: Customer Success lead
 
   - name: q3_ama_north_star
     label: "Q3 - AMA North Star"
@@ -38,4 +38,4 @@ exposures:
     depends_on:
       - ref('mart_ama_quality_weekly')
     owner:
-      name: Leadership
+      name: CEO
