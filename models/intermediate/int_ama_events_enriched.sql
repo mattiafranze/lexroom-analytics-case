@@ -30,9 +30,11 @@ SELECT
     , w.workspace_id IS NULL                                        AS is_orphan_workspace
     , w.plan
     , w.country
+    , e.event_date < w.signup_date                                  AS is_before_workspace_signup
     , e.module
     , e.event_date
     , e.event_week
+    , e.event_date > DATE '{{ var("as_of_date") }}'                 AS is_after_as_of_date
     , e.is_cached
     , e.response_latency_ms
     , e.is_timeout

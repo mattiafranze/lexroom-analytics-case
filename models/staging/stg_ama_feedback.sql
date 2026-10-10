@@ -1,7 +1,9 @@
+-- One feedback per answer: if a user rates the same answer again, the latest rating wins.
 WITH source AS (
 
-    SELECT DISTINCT *
+    SELECT *
     FROM {{ source('raw', 'raw_feedback_ama') }}
+    QUALIFY ROW_NUMBER() OVER (PARTITION BY event_id ORDER BY created_at DESC, feedback_id) = 1
 
 )
 

@@ -21,7 +21,13 @@ models:
       - name: median_latency_ms_uncached
         description: Median answer time, excluding cached answers and timeouts.
       - name: reason_wrong_answer
-        description: Thumbs down tagged `wrong_answer`. The reason columns tell Product what kind of fix is needed.
+        description: Thumbs down tagged `wrong_answer`. The reason columns tell Product what kind of fix is needed, and always add up to `thumbs_down`.
+      - name: reason_other
+        description: Thumbs down tagged `other`.
+      - name: reason_missing
+        description: Thumbs down with no reason given (about 1 in 5).
+      - name: is_after_as_of_date
+        description: "{{ doc('is_after_as_of_date') }}"
       - name: is_low_sample
         description: "{{ doc('is_low_sample') }}"
 
@@ -35,11 +41,14 @@ models:
         data_tests: [unique, not_null]
       - name: good_answer_rate
         description: "{{ doc('good_answer_rate') }}"
-        data_tests: [not_null]
       - name: technical_success_rate
         description: "{{ doc('technical_success_rate') }}"
       - name: thumbs_down_rate
         description: "{{ doc('thumbs_down_rate') }}"
+      - name: is_after_as_of_date
+        description: "{{ doc('is_after_as_of_date') }}"
+      - name: thumbs_down_rate_successful
+        description: Thumbs-down rate among rated answers that were technically sound. The second factor of the North Star.
       - name: feedback_rate
         description: Share of answers that received a valid rating. If it moves, the North Star becomes less comparable over time.
       - name: is_low_sample
@@ -47,17 +56,13 @@ models:
 
   - name: mart_workspace_health
     description: >
-      **Grain: one row per workspace, as of the last day with data.** Tells Customer
+      **Grain: one row per workspace, as of `as_of_date` (12 April 2026).** Tells Customer
       Success which accounts show a deteriorating AMA experience, and why.
     columns:
       - name: workspace_id
         data_tests:
           - unique
           - not_null
-          - relationships:
-              arguments:
-                to: ref('stg_workspaces')
-                field: workspace_id
       - name: risk_score
         description: "{{ doc('risk_score') }}"
         data_tests: [not_null]
@@ -66,11 +71,15 @@ models:
           - accepted_values:
               arguments:
                 values: [high, medium, low]
+      - name: signup_date
+        description: Workspace signup date. Not reliable for 3 workspaces that have answers before it (see README).
+      - name: thumbs_down_rate_current
+        description: Thumbs-down rate in the last 28 days. Null when the workspace has no rated answers in the period.
       - name: signal_quality_drop
-        description: Thumbs-down rate up at least 10 points vs the previous 28 days.
+        description: Thumbs-down rate at least 10 points higher than in the previous 28 days, with at least 15 rated answers in both periods.
       - name: signal_usage_drop
-        description: Answers down more than half of the platform-wide decline would explain.
+        description: Answers in the last 28 days below half of what the platform trend predicts for this workspace (min 30 answers before).
       - name: signal_users_drop
-        description: Active users down more than 30% beyond the platform trend.
+        description: Active users in the last 28 days below half of what the platform trend predicts (min 5 users before).
       - name: signal_failed_answers
         description: At least 3% of answers timed out or had no sources.

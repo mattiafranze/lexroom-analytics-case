@@ -7,11 +7,11 @@ The week the answer was generated, as the Monday that starts it (ISO week, UTC).
 {% enddocs %}
 
 {% docs is_timeout %}
-True when the answer hit the backend hard timeout (latency recorded as exactly 900,000 ms, i.e. 15 minutes). Users rate these answers negatively 83% of the time, so they count as a failure, not as noise.
+True when the answer hit the backend hard timeout (latency recorded as exactly 900,000 ms, i.e. 15 minutes). Only 6 of the 28 timeouts were rated, but 5 of those 6 were thumbs down: we count them as a failure, not as noise.
 {% enddocs %}
 
 {% docs has_no_sources %}
-True when the RAG step retrieved zero sources. For a legal assistant an answer without sources cannot be trusted, so it counts as a failure.
+True when the RAG step retrieved zero sources. This is a product definition, not a finding: for a legal assistant an answer without sources should not be trusted, so it counts as a failure even though users rated 13 of 20 such answers positively.
 {% enddocs %}
 
 {% docs technical_success_rate %}
@@ -25,11 +25,13 @@ Thumbs down divided by rated answers (thumbs up + thumbs down). Only about 27% o
 {% docs good_answer_rate %}
 **AMA North Star.** The estimated share of answers that were both technically sound and found useful:
 
-`good_answer_rate = technical_success_rate × (1 − thumbs_down_rate)`
+`good_answer_rate = technical_success_rate × (1 − thumbs_down_rate_successful)`
+
+i.e. P(technically sound) × P(not rated down | technically sound).
 
 - **Grain:** one value per week (or per module per week).
-- **Window:** weekly, read as a trend over the last 8 complete weeks.
-- **Assumption:** users who rate are representative of those who don't. If they are not, the level is biased but the trend is still informative.
+- **Window:** weekly, read as a trend over the last 8 complete weeks up to `as_of_date`.
+- **Assumption:** users who rate are representative of those who don't. On everything we can observe (latency, tokens, sources, cache, module, role) rated and unrated answers look the same; selection on satisfaction itself cannot be ruled out.
 {% enddocs %}
 
 {% docs is_low_sample %}
@@ -37,16 +39,20 @@ True when fewer than 30 answers were rated in the period (`min_rated_answers` va
 {% enddocs %}
 
 {% docs risk_score %}
-**Account health risk** for Customer Success, from 0 to 100, comparing the last 28 days with the 28 days before.
+**Account health risk** for Customer Success, from 0 to 100, comparing the 28 days up to `as_of_date` with the 28 days before.
 
 | Signal | Points | Fires when |
 |---|---|---|
-| Quality drop | 40 | Thumbs-down rate is at least 10 points higher than in the previous period (min 5 rated answers) |
-| Usage drop | 30 | Answers fell by more than half of what the platform as a whole fell (min 10 answers before) |
-| Users drop | 20 | Active users fell by more than 30% beyond the platform trend (min 3 users before) |
+| Quality drop | 40 | Thumbs-down rate at least 10 points higher than in the previous period (min 15 rated answers in both) |
+| Usage drop | 30 | Answers below half of what the platform trend predicts for this workspace (min 30 answers before) |
+| Users drop | 20 | Active users below half of what the platform trend predicts (min 5 users before) |
 | Failed answers | 10 | At least 3% of answers timed out or had no sources (min 20 answers) |
 
 `risk_level`: **high** ≥ 40, **medium** 20 to 39, **low** below 20.
 
 Usage signals are relative to the platform: when everyone uses AMA less, that is a product question, not an account one.
+{% enddocs %}
+
+{% docs is_after_as_of_date %}
+True for data after `as_of_date` (12 April 2026). From 13 April daily volume drops in one step from ~50 to ~15 answers, which looks like a truncated export rather than real usage. These rows stay visible but are excluded from the answers to the three questions.
 {% enddocs %}

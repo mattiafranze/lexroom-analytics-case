@@ -1,4 +1,4 @@
--- Q2: workspaces at risk, for Customer Success.
+-- Q2: workspaces at risk, for Customer Success, as of as_of_date.
 -- Same score: larger accounts first, because they are the ones CS should call first.
 
 SELECT
@@ -9,8 +9,8 @@ SELECT
     , risk_score
     , answers_previous
     , answers_current
-    , active_users_previous
-    , active_users_current
+    , rated_previous
+    , rated_current
     , ROUND(thumbs_down_rate_previous, 2) AS thumbs_down_rate_previous
     , ROUND(thumbs_down_rate_current, 2)  AS thumbs_down_rate_current
     , signal_quality_drop

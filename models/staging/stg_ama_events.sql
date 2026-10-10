@@ -1,7 +1,9 @@
+-- Deduplicated on event_id: if the same answer is exported twice, the latest row wins.
 WITH source AS (
 
-    SELECT DISTINCT *
+    SELECT *
     FROM {{ source('raw', 'raw_events_ama') }}
+    QUALIFY ROW_NUMBER() OVER (PARTITION BY event_id ORDER BY created_at DESC) = 1
 
 )
 

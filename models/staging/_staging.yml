@@ -2,7 +2,7 @@ version: 2
 
 models:
   - name: stg_ama_events
-    description: "{{ doc('ama_answer') }} One row per answer, with module names normalised and invalid latencies cleaned."
+    description: "{{ doc('ama_answer') }} One row per answer, with module names normalised, invalid latencies cleaned and row-level failure flags."
     columns:
       - name: event_id
         data_tests: [unique, not_null]
@@ -37,12 +37,14 @@ models:
       - name: has_no_sources
         description: "{{ doc('has_no_sources') }}"
       - name: is_cached
-        description: True when the answer came from cache (median latency ~120 ms vs ~3.2 s).
+        description: >
+          True when the answer came from cache (median latency ~120 ms vs ~3.2 s).
+          A few cached rows look inconsistent (4 at the 900,000 ms timeout, 5 at exactly 45,000 ms, 12 with zero sources).
       - name: event_week
         description: "{{ doc('event_week') }}"
 
   - name: stg_ama_feedback
-    description: Thumbs up/down left on an AMA answer. One row per feedback, exact duplicates removed.
+    description: Thumbs up/down left on an AMA answer. One row per answer rated; if an answer is rated twice, the latest rating wins.
     columns:
       - name: feedback_id
         data_tests: [unique, not_null]
@@ -72,6 +74,15 @@ models:
     columns:
       - name: user_id
         data_tests: [unique, not_null]
+      - name: workspace_id
+        description: 3 test-like users (u_orphan_0/1/2) point to workspaces missing from `raw_workspaces`.
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_workspaces')
+                field: workspace_id
+              config:
+                severity: warn
       - name: created_at_utc
         description: >
           Not reliable: 71 users have answers before this date. Do not use it to
